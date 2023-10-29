@@ -76,3 +76,17 @@ class DBStorage:
         """ calls remove()
         """
         self.__session.close()
+
+    def get(self, cls, id):
+        """Retrieve an object"""
+        if cls and id and isinstance(id, str):
+            key = "{}.{}".format(cls.__name__, id)
+            return self.all(cls).get(key)
+        return None
+
+    def count(self, cls=None):
+        """Count the number of objects in storage"""
+        if cls:
+            return len(self.all(cls))
+        else:
+            return len(self.all())
