@@ -6,6 +6,7 @@ from sqlalchemy.ext.declarative import declarative_base
 import uuid
 from datetime import datetime
 import models
+from hashlib import md5
 
 
 Base = declarative_base()
@@ -74,7 +75,7 @@ class BaseModel:
         models.storage.new(self)
         models.storage.save()
 
-    def to_dict(self):
+    def to_dict(self, psswd_save=False):
         """
         Converting the object to a dictionary.
         Returns:
@@ -86,6 +87,9 @@ class BaseModel:
         my_dict["updated_at"] = self.updated_at.isoformat()
         if '_sa_instance_state' in my_dict.keys():
             del my_dict['_sa_instance_state']
+
+        if not psswd_save and 'password' in my_dict:
+            del my_dict['pasword']
         return my_dict
 
     def delete(self):
