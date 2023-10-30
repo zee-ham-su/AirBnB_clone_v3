@@ -16,11 +16,10 @@ def get_all_places_by_city(city_id):
     if city is None:
         abort(404)
     places = [place.to_dict() for place in city.places]
-    return (jsonify(places))
+    return jsonify(places)
 
 
-@app_views.route('/places/<place_id>', methods=['GET'],
-                 strict_slashes=False)
+@app_views.route('/places/<place_id>', methods=['GET'], strict_slashes=False)
 def get_place_by_id(place_id):
     """Retrieves a Place object by its ID."""
     place = storage.get(Place, place_id)
@@ -49,17 +48,15 @@ def create_place(city_id):
     if city is None:
         abort(404)
     json_data = request.get_json()
-    if not json_data:
-        abort(400, description="Not a JSON")
-    user_id = json_data.get('user_id')
-    if not user_id:
-        abort(400, description="Missing user_id")
-    user = storage.get(User, user_id)
+    if json_data is None:
+        abort(400, description='Not a JSON')
+    if 'user_id' not in json_data:
+        abort(400, description='Missing user_id')
+    user = storage.get(User, json_data['user_id'])
     if user is None:
         abort(404)
-    name = json_data('name')
-    if not name:
-        abort(400, description="Missing name")
+    if 'name' not in json_data:
+        abort(400, description='Missing name')
     new_place = Place(city_id=city_id, user_id=json_data['user_id'],
                       **json_data)
     storage.new(new_place)
@@ -74,8 +71,8 @@ def update_place_by_id(place_id):
     if place is None:
         abort(404)
     json_data = request.get_json()
-    if not json_data:
-        abort(400, description="Not a JSON")
+    if json_data is None:
+        abort(400, description='Not a JSON')
     for attribute, val in json_data.items():
         if attribute not in ['id', 'user_id', 'city_id', 'created_at',
                              'updated_at']:
